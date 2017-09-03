@@ -21,7 +21,12 @@ module.exports = {
 				test: /\.jsx$/,
 				exclude: /node_modules/,
 				loader: ['react-hot-loader','babel-loader']
-			}
+			},
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader?modules',
+        include: /flexboxgrid/
+      }
 		]
   }
 }

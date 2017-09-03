@@ -37,6 +37,7 @@ function setupWebpack(app) {
 
 function setupRestRoutes(app) {
   app.use('/users', require(path.join(__dirname, './users')));
+  app.use('/restaurants', require(path.join(__dirname, './restaurants')));
   return app;
 }
 
