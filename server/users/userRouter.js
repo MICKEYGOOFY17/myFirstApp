@@ -7,9 +7,9 @@ let params = {
 };
 
 router.post('/signup', (req,res) => {
+  console.log('here');
   userController.saveUser(req.body, function(result){
-    console.log(result);
-    res.send({success: result});
+    res.status(201).json({success: result});
   },
 function(error) {
   console.log(error);
@@ -48,7 +48,7 @@ router.get('/showuser', (req,res) => {
   });
 });
 
-router.post('/updatefavorite', (req,res) => {
+router.put('/updatefavorite', (req,res) => {
   userController.updateFavorite(req.body.username, req.body.restaurant, req.body.perform, function(result, err){
     if(err) {
       res.send(err);

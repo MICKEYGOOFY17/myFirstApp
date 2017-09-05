@@ -65,21 +65,27 @@ export default class Login extends React.Component {
 
   handleClick() {
     let th = this;
-    let contactPattern = /[0-9]{10}/;
-    if(this.state.number.trim().length != 0 && !contactPattern.test(this.state.number)) {
-			this.setState({
-				numberErrorText: 'Enter a valid 10 digit mobile number.'
-			})
-		} else if(this.state.password.trim().length === 0) {
-      this.setState({
-        passwordErrorText: 'Enter a valid password'
-      })
-    } else if(this.state.username.trim().length === 0) {
+    let contactPattern = /[1-9]{1}[0-9]{9}/;
+    let flag = true;
+    if(this.state.username.trim().length === 0) {
       this.setState({
         usernameErrorText: 'Enter a valid username'
       })
+      flag = false;
     }
-    else {
+    if(this.state.password.trim().length === 0) {
+      this.setState({
+        passwordErrorText: 'Enter a valid password'
+      })
+      flag = false;
+    }
+    if(this.state.number.trim().length === 0 || !contactPattern.test(this.state.number)) {
+			this.setState({
+				numberErrorText: 'Enter a valid 10 digit mobile number.'
+			})
+      flag = false;
+		}
+    if(flag) {
       Request
         .post('/users/signup')
         .send({username: th.state.username, password:th.state.password, number:th.state.number})
@@ -118,21 +124,36 @@ export default class Login extends React.Component {
 
   handleLogin() {
     let th = this;
-    Request
-      .post('/users/login')
-      .send({username: th.state.username, password:th.state.password})
-      .end(function(err,res) {
-        if(err) {
-          th.setState({
-            loginError: res.body.error
-          })
-        } else {
-          localStorage.setItem('token', res.body.token);
-          th.setState({
-            login: true
-          })
-        }
+    let flag = true;
+    if(this.state.username.trim().length === 0) {
+      this.setState({
+        usernameErrorText: 'Enter a valid username'
+      });
+      flag = false;
+    }
+    if(this.state.password.trim().length === 0) {
+      this.setState({
+        passwordErrorText: 'Enter a valid password'
       })
+      flag = false;
+    }
+    if(flag) {
+      Request
+        .post('/users/login')
+        .send({username: th.state.username, password:th.state.password})
+        .end(function(err,res) {
+          if(err) {
+            th.setState({
+              loginError: res.body.error
+            })
+          } else {
+            localStorage.setItem('token', res.body.token);
+            th.setState({
+              login: true
+            })
+          }
+        })
+    }
   }
 
   render() {

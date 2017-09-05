@@ -87,7 +87,7 @@ export default class Restaurant extends React.Component {
     let username = this.state.user;
     let th = this;
     Request
-      .post('/users/updatefavorite')
+      .put('/users/updatefavorite')
       .send({restaurant:restaurant, username: username, perform: 'removeRestaurant'})
       .end(function(err,res) {
         if(err) {
