@@ -17,6 +17,10 @@ var restaurant = new Schema({
   rating: {
       type: String,
       required: true
+  },
+  id: {
+    type: String,
+    required: true
   }
 })
 
@@ -24,11 +28,16 @@ var restaurant = new Schema({
 var userSchema = new Schema({
   username: {
     type : String,
-    required : true
+    required : true,
+    unique: true
   },
   password: {
     type : String,
     required : true
+  },
+  number: {
+    type: String,
+    required: true
   },
   favIds: [String],
   Restaurant: [restaurant]

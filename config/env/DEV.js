@@ -11,10 +11,7 @@ mongo['mongoURL'] = ('mongodb://' + mongo.host + ':' + mongo.port + '/' + mongo.
 
 let config = {
   MONGO: mongo,
-  jwtSecret: 'MyS3cr3tK3Y',
-  jwtSession: {
-    session: false
-  }
+  jwtSecret: 'MyS3cr3tK3Y'
 }
 
 module.exports = config;

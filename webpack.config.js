@@ -12,6 +12,9 @@ module.exports = {
     filename: 'index.js',
     publicPath: '/dist/'
   },
+  devServer: {
+    historyApiFallback: true,
+  },
 	plugins: [
 		new webpack.HotModuleReplacementPlugin()
 	],

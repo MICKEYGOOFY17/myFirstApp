@@ -35,9 +35,15 @@ function setupWebpack(app) {
   return app;
 }
 
-function setupRestRoutes(app) {
+function setupAppRoutes(app) {
   app.use('/users', require(path.join(__dirname, './users')));
-  app.use('/restaurants', require(path.join(__dirname, './restaurants')));
+  return app;
+}
+
+function setupRestRoutes(app) {
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '..', 'client', 'index.html'));
+  });
   return app;
 }
 
@@ -68,10 +74,11 @@ function setupRestRoutes(app) {
 
 // App Constructor function is exported
 module.exports = {
-  createApp: createApp,
-  setupStaticRoutes: setupStaticRoutes,
-  setupRestRoutes: setupRestRoutes,
-  setupMiddlewares: setupMiddlewares,
-  setupWebpack: setupWebpack,
-  setupMongooseConnections: setupMongooseConnections
+  createApp,
+  setupStaticRoutes,
+  setupAppRoutes,
+  setupRestRoutes,
+  setupMiddlewares,
+  setupWebpack,
+  setupMongooseConnections
 };

@@ -10,7 +10,11 @@ router.post('/signup', (req,res) => {
   userController.saveUser(req.body, function(result){
     console.log(result);
     res.send({success: result});
-  });
+  },
+function(error) {
+  console.log(error);
+  res.status(404).json({error: error})
+});
 });
 
 router.post('/login', (req,res) => {
@@ -23,10 +27,14 @@ router.post('/login', (req,res) => {
                 token: token
             })
     }
+  }, function(error){
+    res.status(500).json({
+      error: error
+    })
   });
 });
 
-router.get('/showUser', (req,res) => {
+router.get('/showuser', (req,res) => {
   let token = req.headers.authorization;
   jwt.verify(token, params.secretOrKey, function(err, decoded) {
     if (err) {
@@ -36,6 +44,18 @@ router.get('/showUser', (req,res) => {
       userController.getUser(decoded._doc.username, function(result) {
         res.send({success: true, user: result});
       })
+    }
+  });
+});
+
+router.post('/updatefavorite', (req,res) => {
+  userController.updateFavorite(req.body.username, req.body.restaurant, req.body.perform, function(result, err){
+    if(err) {
+      res.send(err);
+    } else if(result.ok === 1) {
+      res.send({success: 'success'});
+    } else {
+      res.send({success: 'failed'});
     }
   });
 });

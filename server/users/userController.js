@@ -25,15 +25,20 @@ let findUser = function(userObj, successCB, errorCB) {
   let encrypted = cipher.update(userObj.password, 'utf8', 'hex');
   encrypted = cipher.final('hex');
 
-  userObj.password = encrypted;
-
-  userModel.findOne(userObj, function(err, res) {
+  userModel.findOne({username: userObj.username}, function(err, res) {
     if(err) {
       console.log('error in finding user' + err);
       errorCB(err);
     }
-    else {
-      successCB(res);
+    else if(res !== null){
+      if(res.password === encrypted) {
+        successCB(res);
+      }
+      else {
+        errorCB('Password Incorrect');
+      }
+    } else {
+        errorCB('User does not exist');
     }
   })
 }
@@ -50,8 +55,21 @@ let getUser = function(user, successCB, errorCB) {
   })
 }
 
+let updateFavorite = function(username, restaurant, perform, successCB, errorCB) {
+  let favId = restaurant.id;
+  let query = perform === 'addRestaurant' ? {$push:{Restaurant: restaurant, favIds: favId}} : {$pull:{Restaurant: restaurant, favIds: favId}}
+
+  userModel.update({username: username},query, function(err,result) {
+    if(err) {
+      errorCB(err);
+    }
+    successCB(result);
+  })
+}
+
 module.exports = {
   saveUser: saveUser,
   findUser: findUser,
-  getUser: getUser
+  getUser: getUser,
+  updateFavorite: updateFavorite
 }

@@ -17,6 +17,8 @@ module.exports = function() {
 
   app = service.setupMiddlewares(app);
 
+  app = service.setupAppRoutes(app);
+
   app = service.setupRestRoutes(app);
 
   app = service.setupMongooseConnections(app);

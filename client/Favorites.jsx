@@ -8,6 +8,10 @@ import ReactStars from 'react-stars';
 import IconButton from 'material-ui/IconButton';
 import FavIcon from 'material-ui/svg-icons/action/favorite-border';
 import FavIconFull from 'material-ui/svg-icons/action/favorite';
+import {Redirect, Link} from 'react-router-dom';
+import Drawer from 'material-ui/Drawer';
+import MenuItem from 'material-ui/MenuItem';
+import LogoutIcon from 'material-ui/svg-icons/action/exit-to-app';
 
 const masonryOptions = {
     transitionDuration: 0
@@ -28,10 +32,15 @@ export default class Restaurant extends React.Component {
     this.state = {
       user: '',
       restaurants: [],
-      favIds: []
+      favIds: [],
+      open: false,
+      title: false
     }
     this.getUser = this.getUser.bind(this);
     this.removeFavorite = this.removeFavorite.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleTitle = this.handleTitle.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   componentWillMount() {
@@ -41,7 +50,7 @@ export default class Restaurant extends React.Component {
   getUser() {
     let th = this;
     Request
-      .get('users/showUser')
+      .get('users/showuser')
       .set({'Authorization': localStorage.getItem('token')})
       .end(function(err, res){
         if(err) {
@@ -66,6 +75,7 @@ export default class Restaurant extends React.Component {
     restaurant.image = res.image;
     restaurant.address = res.address;
     restaurant.rating = res.rating;
+    restaurant.id = res.id;
     let restaurantState = this.state.restaurants;
     let fav = -1;
     restaurantState = restaurantState.filter(function(res, index) {
@@ -77,8 +87,8 @@ export default class Restaurant extends React.Component {
     let username = this.state.user;
     let th = this;
     Request
-      .post('/restaurants/removefavorite')
-      .send({restaurant:restaurant, favId: th.state.favIds[fav], username: username})
+      .post('/users/updatefavorite')
+      .send({restaurant:restaurant, username: username, perform: 'removeRestaurant'})
       .end(function(err,res) {
         if(err) {
           console.log(err);
@@ -91,17 +101,49 @@ export default class Restaurant extends React.Component {
       })
   }
 
+  handleOpen() {
+    console.log('here');
+    this.setState({
+      open: true
+    })
+  }
+
+  handleTitle() {
+    this.setState({
+      title: true
+    })
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+  }
+
   render() {
     let th = this;
-    console.log('here');
     return (
       <div>
         <AppBar
           title="Zomato"
-          showMenuIconButton = {false}
+          onLeftIconButtonTouchTap={this.handleOpen}
+          onTitleTouchTap={this.handleTitle}
+          style = {{cursor: 'pointer'}}
+          iconElementRight={
+            <Link to='/'><IconButton title = 'Logout' onClick={th.logout}>
+              <LogoutIcon/>
+            </IconButton></Link>
+          }
         />
+        <Drawer open={this.state.open}>
+         <Link to='/favorite' style={{textDecoration: 'none'}}><MenuItem>Favorites</MenuItem></Link>
+       </Drawer>
+       {
+         this.state.title && <Redirect to='/'/>
+       }
+        <Grid>
+          <Link to='/' style={{float:'right', marginRight: '40px', fontSize: '16px'}}><p>Back</p></Link>
+        <br/>
         {
-          this.state.restaurants.length > 0 && <Grid>
+          this.state.restaurants.length > 0 &&
             <Row><Masonry
               className={'my-class'}
               elementType={'ul'}
@@ -141,7 +183,7 @@ export default class Restaurant extends React.Component {
                     <h4>User Rating:({rating})</h4>
                     <ReactStars
                       count={5}
-                      value={rating}
+                      value={parseInt(rating)}
                       size={24}
                       edit={false}
                       color2={'#ffd700'}
@@ -151,13 +193,13 @@ export default class Restaurant extends React.Component {
               })
             }
             </Masonry></Row>
-          </Grid>
         }
         {
-          th.state.restaurants === 'none' &&
+          th.state.restaurants.length === 0 &&
           <h3>No favorite restaurants found.</h3>
         }
-        </div>
+      </Grid>
+    </div>
         );
         }
         }
