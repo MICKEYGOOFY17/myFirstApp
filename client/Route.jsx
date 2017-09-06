@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter as Router, Switch, Route, Match} from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import App from './App.jsx';
@@ -23,7 +23,17 @@ ReactDOM.render(
               }
             }
             }/>
-            <Route exact path= '/favorite' component={Favorite}/>
+            <Route exact path= '/favorite' render={() => {
+              const token = localStorage.getItem('token');
+              if(token){
+              	return <Favorite/>
+              }
+              else {
+                <Redirect to='/'/>
+                return <Login/>
+              }
+            }
+          }/>
           </div>
     </Router>
   </MuiThemeProvider>,

@@ -23,7 +23,7 @@ router.post('/login', (req,res) => {
       var token = jwt.sign(result, params.secretOrKey, {
           // expiresInMinutes: 1440 // expires in 24 hours
         });
-      res.send({
+      res.status(200).json({
                 token: token
             })
     }
@@ -38,11 +38,13 @@ router.get('/showuser', (req,res) => {
   let token = req.headers.authorization;
   jwt.verify(token, params.secretOrKey, function(err, decoded) {
     if (err) {
-      res.send({ success: false, message: 'Failed to authenticate token.' });
+      res.status(500).json({ success: false, message: 'Failed to authenticate token.' });
     } else {
       // if everything is good, save to request for use in other routes
       userController.getUser(decoded._doc.username, function(result) {
-        res.send({success: true, user: result});
+        res.status(200).json({success: true, user: result});
+      },function(error) {
+        res.status(500).json({success:false, message: 'no user found'})
       })
     }
   });
@@ -51,11 +53,11 @@ router.get('/showuser', (req,res) => {
 router.put('/updatefavorite', (req,res) => {
   userController.updateFavorite(req.body.username, req.body.restaurant, req.body.perform, function(result, err){
     if(err) {
-      res.send(err);
+      res.status(500).json({success:failed, message: 'update failed'});
     } else if(result.ok === 1) {
-      res.send({success: 'success'});
+      res.status(200).json({success: 'success', message: 'updated successfully'});
     } else {
-      res.send({success: 'failed'});
+      res.status(200).json({success: 'failed', message: 'updation failed'});
     }
   });
 });
